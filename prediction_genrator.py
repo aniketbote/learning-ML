@@ -29,7 +29,7 @@ X = loaded_model.transform( X )
 
 
 
-print(' prepro done')
+print(' preprossesing done')
 ##################################################################################
 
 ##filename = 'logreq_1.sav'
