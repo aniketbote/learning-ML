@@ -1,0 +1,12 @@
+## directory
+#####################
+event/
+tensor2/
+data/
+TensorFlow/
+labelimg/
+protobuf/
+temp/
+test/
+workspace/
+
