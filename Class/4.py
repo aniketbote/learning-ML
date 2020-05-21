@@ -8,7 +8,7 @@ import seaborn as sns
 
 
 
-train_df = pd.read_csv('mytrain3.csv')
+train_df = pd.read_csv('mytrain2.csv')
 test_df = pd.read_csv('mytest2.csv')
 train_data, val_data = train_test_split(train_df, test_size=0.2, random_state=133, shuffle= True)
 
@@ -40,6 +40,9 @@ class Preprocess:
 # on_epoch_end
 
 class MyCustomCallback(tf.keras.callbacks.Callback):
+    def __init__(self, name):
+        self.name = name
+
     def on_train_begin(self, batch, logs=None):
         # print('training begin')
         # print(batch)
@@ -53,13 +56,17 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
         # print(logs)
         pass
         # print('\n Training: batch {} begins at {}'.format(batch, datetime.datetime.now().time()))
-    def on_epoch_begin(self, epoch, logs=None):
+    def on_epoch_begin(self, epoch, logs = None):
         # print('train batch begin')
-        # print(epoch)
         # print(logs)
+        # print(epoch)
         pass
     def on_epoch_end(self, epoch, logs=None):
         # print(self.validation_data)
+        print('train epoch end')
+        print(logs)
+        print(epoch)
+        print(self.name)
         pass
         # print('Training: batch {} ends at {}'.format(batch, datetime.datetime.now().time()))
 
@@ -162,7 +169,7 @@ model = create_model()
 
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
-              metrics=['accuracy',tf.keras.metrics.Precision()])
+              metrics=['accuracy'])
 
 
 ALL_CALLBACKS = []
@@ -205,7 +212,7 @@ ALL_CALLBACKS.append(tensorboard)
 ALL_CALLBACKS.append(lr_schedule)
 ALL_CALLBACKS.append(reduce_lr)
 # ALL_CALLBACKS.append(model_checkpoint)
-ALL_CALLBACKS.append(MyCustomCallback())
+ALL_CALLBACKS.append(MyCustomCallback('Aniket'))
 
 
 history = model.fit(train_ds,
