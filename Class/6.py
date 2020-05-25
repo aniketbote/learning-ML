@@ -64,18 +64,16 @@ def make_dataset(dataframe, shuffle=True, batch_size=32):
 
 
 def create_model():
-    input1 = tf.keras.Input(shape=(30,))
-    hidden1 = tf.keras.layers.Dense(units = 12, activation='relu')(input1)
+    feature_columns, feature_layer_inputs = create_input()
+    dense_features = tf.keras.layers.DenseFeatures(feature_columns)(feature_layer_inputs)
+    hidden1 = tf.keras.layers.Dense(units = 12, activation='relu')(dense_features)
     hidden2 = tf.keras.layers.Dense(units = 6, activation='relu')(hidden1)
     output1 = tf.keras.layers.Dense(units = 2, activation='softmax')(hidden2)
-    model = tf.keras.models.Model(inputs = input1, outputs = output1)
+    model = tf.keras.models.Model(
+            inputs = [v for v in feature_layer_inputs.values()],
+            outputs = output1)
+
     model.summary()
-    # model = tf.keras.Sequential([
-    # feature_layer,
-    # tf.keras.layers.Dense(units = 12, activation='relu', use_bias = True, kernel_initializer= 'glorot_uniform', bias_initializer = 'glorot_uniform', name = 'd1'),
-    # tf.keras.layers.Dense(units = 6, activation='relu', use_bias = True, kernel_initializer= 'glorot_uniform', bias_initializer = 'glorot_uniform', name = 'd2'),
-    # tf.keras.layers.Dense(units = 2, activation='softmax', name = 'out')
-    # ])
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
@@ -106,29 +104,35 @@ test_ds = df_to_dataset(test_df, shuffle=False, batch_size=BATCH_SIZE)
 
 
 # age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,thal,target
-NUMERIC_COLUMNS = ['sex','trestbps','chol','fbs','thalach','exang','oldpeak']
-CATEGORICAL_COLUMNS = ['cp','restecg','slope','ca','thal']
-feature_columns = []
-
-pre_age = Preprocess('age')
-age_buck = pre_age.buck_column([20, 30, 40, 50])
-feature_columns.append(age_buck)
-
-for col in NUMERIC_COLUMNS:
-    temp_obj = Preprocess(col)
-    num_col = temp_obj.num_column()
-    feature_columns.append(num_col)
-
-for col in CATEGORICAL_COLUMNS:
-    temp_obj = Preprocess(col)
-    vocab = train_df[col].unique()
-    one_hot = temp_obj.cat_column(vocab)
-    feature_columns.append(one_hot)
+def create_input():
+    NUMERIC_COLUMNS = ['sex','trestbps','chol','fbs','thalach','exang','oldpeak']
+    CATEGORICAL_COLUMNS = ['cp','restecg','slope','ca','thal']
+    feature_columns = []
+    feature_layer_inputs = {}
 
 
+    pre_age = Preprocess('age')
+    age_buck = pre_age.buck_column([20, 30, 40, 50])
+    feature_columns.append(age_buck)
+    feature_layer_inputs['age'] = tf.keras.Input(shape=(1,), name='age')
+
+    for col in NUMERIC_COLUMNS:
+        temp_obj = Preprocess(col)
+        num_col = temp_obj.num_column()
+        feature_columns.append(num_col)
+        feature_layer_inputs[col] = tf.keras.Input(shape=(1,), name=col)
+
+    for col in CATEGORICAL_COLUMNS:
+        temp_obj = Preprocess(col)
+        vocab = train_df[col].unique()
+        one_hot = temp_obj.cat_column(vocab)
+        feature_columns.append(one_hot)
+        feature_layer_inputs[col] = tf.keras.Input(shape=(1,), name=col)
+    return feature_columns, feature_layer_inputs
 
 
-feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
+# feature_columns, feature_layer_inputs = create_input()
+# feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
 # print(feature_layer(example_batch).numpy())
 
 
