@@ -106,7 +106,7 @@ test_ds = df_to_dataset(test_df, shuffle=False, batch_size=BATCH_SIZE)
 # age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,thal,target
 def create_input():
     NUMERIC_COLUMNS = ['sex','trestbps','chol','fbs','thalach','exang','oldpeak']
-    CATEGORICAL_COLUMNS = ['cp','restecg','slope','ca','thal']
+    CATEGORICAL_COLUMNS = ['cp','restecg','slope','ca']
     feature_columns = []
     feature_layer_inputs = {}
 
@@ -127,7 +127,7 @@ def create_input():
         vocab = train_df[col].unique()
         one_hot = temp_obj.cat_column(vocab)
         feature_columns.append(one_hot)
-        feature_layer_inputs[col] = tf.keras.Input(shape=(1,), name=col)
+        feature_layer_inputs[col] = tf.keras.Input(shape=(1,), name=col, dtype=tf.dtypes.int64)
     return feature_columns, feature_layer_inputs
 
 
