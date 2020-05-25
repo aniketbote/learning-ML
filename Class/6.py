@@ -42,10 +42,6 @@ class Preprocess:
         return ec
 
 
-def demo(col, data):
-    feture_layer = tf.keras.layers.DenseFeatures(col)
-    print(feature_layer(data).numpy())
-
 def df_to_dataset(dataframe, shuffle=True, batch_size=32):
     labels = dataframe.pop('target')
     ds = tf.data.Dataset.from_tensor_slices((dict(dataframe), labels))
@@ -93,17 +89,8 @@ steps_per_epoch = np.ceil(2.0*count_neg/BATCH_SIZE)
 val_ds = df_to_dataset(val_data, shuffle=False, batch_size=BATCH_SIZE)
 test_ds = df_to_dataset(test_df, shuffle=False, batch_size=BATCH_SIZE)
 
-# example_batch = next(iter(train_ds))[0]
-#
-#
-# print('\n'*10)
-# for feature_batch, label_batch in pos_ds.take(1):
-#     print('Every feature:', list(feature_batch.keys()))
-#     print('A batch of ages:', feature_batch['age'])
-#     print('A batch of targets:', label_batch )
 
 
-# age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,thal,target
 def create_input():
     NUMERIC_COLUMNS = ['sex','trestbps','chol','fbs','thalach','exang','oldpeak']
     CATEGORICAL_COLUMNS = ['cp','restecg','slope','ca']
@@ -131,24 +118,32 @@ def create_input():
     return feature_columns, feature_layer_inputs
 
 
-# feature_columns, feature_layer_inputs = create_input()
-# feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
-# print(feature_layer(example_batch).numpy())
+model1 = create_model()
 
 
 
-model = create_model()
+ALL_CALLBACKS = []
 
+tensorboard = tf.keras.callbacks.TensorBoard(
+    log_dir='logs',
+    histogram_freq=1,
+    write_graph=True,
+    write_images=True,
+    update_freq='epoch',
+    profile_batch=0,
+    embeddings_freq=1
+    )
+
+
+
+ALL_CALLBACKS.append(tensorboard)
 
 history = model.fit(train_ds,
           validation_data=val_ds,
-          epochs=100,
+          epochs=1000000,
           verbose = 1,
-          steps_per_epoch=steps_per_epoch)
-
-# print(model.summary())
-
-# print(history.history)
+          steps_per_epoch=steps_per_epoch,
+          callbacks = ALL_CALLBACKS)
 
 
 loss, accuracy = model.evaluate(test_ds)
