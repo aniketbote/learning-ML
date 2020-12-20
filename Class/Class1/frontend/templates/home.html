@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="para-form-head">
+      <h1> Training Parameters </h1>
+    </div>
+
+    <div class="para-form">
+      <form action="/run" method="post" enctype="multipart/form-data">
+        <div class="internal">
+          <h2 class="name"> CPU/GPU </h2>
+          <select name="hardware">
+            <option value="CPU">CPU</option>
+            <option value="GPU">GPU</option>
+          </select>
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Database </h2>
+          <select name="database">
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Train </h2>
+          <input type="file" name="train">
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Validation </h2>
+          <input type="file" name="validation">
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Test </h2>
+          <input type="file" name="test">
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Epochs </h2>
+          <input type="number" name="epoch">
+        </div>
+
+        <div class="internal">
+          <h2 class="name"> Training Step </h2>
+          <input type="number" name="training">
+        </div>
+
+        <button type="submit" class="btn run">Run</button>
+
+
+
+
+
+
+
+      </form>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,10 @@
+tensorflow
+pandas
+sklearn
+matplotlib
+tensorflow_addons
+tensorflow_datasets
+seaborn
+jupyter
+pydot
+graphviz
